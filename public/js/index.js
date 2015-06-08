@@ -3,7 +3,6 @@ var updateInterval = 2000;
 var $container = null;
 var template = null;
 
-var floatPrecission = 2;
 var oldData = [];
 
 $(function() {
@@ -38,7 +37,7 @@ function render(data) {
     data = _.map(data, function(value, key) {
         return {
             mac: key,
-            temp: value.temp.toFixed(floatPrecission)
+            temp: value.temp
         };
     });
 
@@ -51,6 +50,4 @@ function render(data) {
             $container.fadeIn();
         });
     }
-
-
 }

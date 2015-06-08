@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var data = {test: {temp: 20.2}};
+var data = {};
 
 router.get('/', function(req, res, next) {
     res.render('index');
@@ -11,11 +11,13 @@ router.get('/api/readAll', function(req, res, next) {
     res.send(data);
 });
 
-router.post('/api/write', function(req, res, next) {
-    var mac = req.body.mac;
-    var temp = req.body.temp;
+router.get('/api/write', function(req, res, next) {
+    var mac = req.query.mac;
+    var temp = req.query.temp;
 
-    data[mac] = temp;
+    data[mac] = {
+        temp: temp
+    };
 
     res.send('ok');
 });
