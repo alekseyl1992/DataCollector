@@ -10,12 +10,12 @@
     </head>
     <body>
         <section id="data">
-            Waiting for data...
             <script id="template" language="mustache/template">
                 {{#data}}
                 <b>{{mac}}: {{temp}} &deg;C</b>
                 <br />
                 {{/data}}
+                {{^data}}Waiting for data...{{/data}}
             </script>
         </section>
     </body>

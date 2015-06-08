@@ -22,4 +22,8 @@ router.get('/api/write', function(req, res, next) {
     res.send('ok');
 });
 
+router.get('/api/clearAll', function(req, res, next) {
+    data = {};
+});
+
 module.exports = router;
