@@ -3,7 +3,7 @@ var updateInterval = 2000;
 var $container = null;
 var template = null;
 
-var oldData = [];
+var oldData = null;
 
 $(function() {
     init();
