@@ -7,12 +7,21 @@ const char* password = "4131918911";
 
 const char* host = "cnc.noip.me";
 int httpPort = 4000;
-int sendInteval = 1000;
+int sendInteval = 2000;
 String macStr = "";
 
 #define ONE_WIRE_BUS 2
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
+
+String getMacString() {
+  uint8_t mac[6];
+  char macBuffer[18] = {0};
+  WiFi.macAddress(mac);
+
+  sprintf(macBuffer, "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  return String(macBuffer);
+}
 
 void setup() {
   Serial.begin(115200);
@@ -39,12 +48,8 @@ void setup() {
   Serial.println("WiFi connected");  
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-  
-  const uint8_t *macPtr = WiFi.macAddress(nullptr);
-  for (int i = 0; i < WL_MAC_ADDR_LENGTH; ++i) {
-    macStr += macPtr[i] + '0';
-  }
-  
+
+  macStr = getMacString();
   Serial.println("MAC address: ");
   Serial.println(macStr);
 }
