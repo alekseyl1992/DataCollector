@@ -10,6 +10,9 @@ int httpPort = 4000;
 int sendInteval = 2000;
 String macStr = "";
 
+static ETSTimer sleep_timer;
+int deepSleepTime = 30 * 1000 * 1000;  // 30s
+
 #define ONE_WIRE_BUS 2
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
@@ -55,8 +58,6 @@ void setup() {
 }
 
 void loop() {
-  delay(sendInteval);
-  
   Serial.print("reading sensors");
   sensors.requestTemperatures();
   float temp = sensors.getTempCByIndex(0);
@@ -102,5 +103,7 @@ void loop() {
   
   Serial.println();
   Serial.println("closing connection");
+  
+  ESP.deepSleep(deepSleepTime, WAKE_RF_DEFAULT);
 }
 
