@@ -6,29 +6,28 @@ const char* ssid     = "ASUS56";
 const char* password = "4131918911";
 
 const char* host = "cnc.noip.me";
+const int connectRetryCount = 2;
+const int retryInterval = 500;  // 500ms
+
 int httpPort = 4000;
 int sendInteval = 2000;
 String macStr = "";
 
-static ETSTimer sleep_timer;
 int deepSleepTime = 30 * 1000 * 1000;  // 30s
+int uselessSleepDelay = 10; // 10ms
 
 #define ONE_WIRE_BUS 2
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
-String getMacString() {
-  uint8_t mac[6];
-  char macBuffer[18] = {0};
-  WiFi.macAddress(mac);
+// function prototypes
+void sendData(WiFiClient &client, const char *tempBuffer);
+String getMacString();
 
-  sprintf(macBuffer, "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-  return String(macBuffer);
-}
 
 void setup() {
   Serial.begin(115200);
-  delay(10);
+  delay(uselessSleepDelay);
 
   Serial.println();
   Serial.println();
@@ -66,19 +65,31 @@ void loop() {
   const int width = 4;
   const int prec = 2;
   char tempBuffer[width * 2] = {0};
-  dtostrf(temp, width, prec, tempBuffer);
-  
+  dtostrf(temp, width, prec, tempBuffer);  
 
   Serial.print("connecting to ");
   Serial.println(host);
   
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
-  if (!client.connect(host, httpPort)) {
-    Serial.println("connection failed");
-    return;
+  
+  for (int i = 0 ; i < connectRetryCount; ++i) {
+    if (!client.connect(host, httpPort)) {
+      Serial.println("connection failed, ");
+      Serial.print("try ");
+      Serial.println(i);
+      delay(retryInterval);
+      continue;
+    } else {
+      sendData(client, tempBuffer);
+      break;
+    }
   }
   
+  ESP.deepSleep(deepSleepTime, WAKE_RF_DEFAULT);
+}
+
+void sendData(WiFiClient &client, const char *tempBuffer) {
   // We now create a URI for the request
   String url = "/api/write";
   url += "?mac=";
@@ -93,17 +104,20 @@ void loop() {
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" + 
                "Connection: close\r\n\r\n");
-  delay(10);
+               
+  delay(uselessSleepDelay);
   
-  // Read all the lines of the reply from server and print them to Serial
-  while(client.available()){
-    String line = client.readStringUntil('\r');
-    Serial.print(line);
-  }
+  // ignore server response
   
   Serial.println();
   Serial.println("closing connection");
-  
-  ESP.deepSleep(deepSleepTime, WAKE_RF_DEFAULT);
 }
 
+String getMacString() {
+  uint8_t mac[6];
+  char macBuffer[18] = {0};
+  WiFi.macAddress(mac);
+
+  sprintf(macBuffer, "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  return String(macBuffer);
+}
