@@ -16,3 +16,12 @@ body {
     align-self: center;
     justify-content: center;
 }
+
+.obsolete {
+    background: indianred;
+    border-radius: 10px;
+}
+
+.entry {
+    padding: 10px;
+}

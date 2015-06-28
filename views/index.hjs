@@ -12,7 +12,12 @@
         <section id="data">
             <script id="template" language="mustache/template">
                 {{#data}}
-                <b>{{mac}}: {{temp}} &deg;C</b>
+                <b class="{{obsolete}} entry" data-mac="{{mac}}" title="{{hint}}">
+                    {{alias}}: {{temp}} &deg;C
+                    {{#obsolete}}
+                    ({{hint}})
+                    {{/obsolete}}
+                </b>
                 <br />
                 {{/data}}
                 {{^data}}Waiting for data...{{/data}}

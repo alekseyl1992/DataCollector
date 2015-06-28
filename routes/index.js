@@ -14,9 +14,11 @@ router.get('/api/readAll', function(req, res, next) {
 router.get('/api/write', function(req, res, next) {
     var mac = req.query.mac;
     var temp = req.query.temp;
+    var time = new Date();
 
     data[mac] = {
-        temp: temp
+        temp: temp,
+        time: time
     };
 
     res.send('ok');
