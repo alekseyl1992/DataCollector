@@ -43,6 +43,10 @@ void setup() {
   
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
+    
+    if (WiFi.status() != WL_CONNECTED) {
+      ESP.deepSleep(deepSleepTime, WAKE_RF_DEFAULT)
+    }
     Serial.print(".");
   }
 
